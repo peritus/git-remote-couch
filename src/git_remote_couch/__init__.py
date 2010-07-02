@@ -1,6 +1,8 @@
 #!/usr/bin/env
 
 import sys
+from couchdb import Server
+from urlparse import urlparse
 
 # Whether or not to show debug messages
 DEBUG = True
@@ -8,109 +10,121 @@ DEBUG = True
 def notify(msg, *args):
     """Print a message to stderr."""
     print >> sys.stderr, msg % args
+    sys.stderr.flush()
 
 def debug (msg, *args):
     """Print a debug message to stderr when DEBUG is enabled."""
     if DEBUG:
         print >> sys.stderr, msg % args
+    sys.stderr.flush()
+
+def stdout(msg=None):
+    if msg == None:
+        msg = ""
+    debug("out: %s" % msg)
+    sys.stderr.flush()
+    print msg
+    sys.stdout.flush()
 
 def error (msg, *args):
     """Print an error message to stderr."""
     print >> sys.stderr, "ERROR:", msg % args
+    sys.stderr.flush()
 
 def warn(msg, *args):
     """Print a warning message to stderr."""
     print >> sys.stderr, "warning:", msg % args
+    sys.stderr.flush()
 
 def die (msg, *args):
     """Print as error message to stderr and exit the program."""
     error(msg, *args)
     sys.exit(1)
 
-def do_capabilities(line):
-    print "connect"
-    print "fetch"
-    print "option"
-    print "push"
-    print
 
-def do_list(line):
-    """Lists all the refs"""
+class CouchRemote(object):
+    def do_capabilities(self, line):
+        stdout("connect")
+        stdout("fetch")
+        stdout("option")
+        stdout("push")
+        stdout()
 
-    #debug("@refs/heads/master HEAD")
-    #print "@refs/heads/master HEAD"
+    def do_list(self, line):
+        """Lists all the refs"""
 
-    print
+        stdout("7aeaa2fc0abbf439534769e15b3a59a5814cc3d1 refs/heads/master")
+        stdout("@refs/heads/master HEAD")
+        stdout()
 
-def do_connect(line):
-    """Connects to the Couch"""
-    if False:
-        die("Can't connect")
-    print "fallback"
-    print
+    def do_connect(self, line):
+        """Connects to the Couch"""
 
-def do_option(line):
-    print "unsupported\n\n"
+        parsed = urlparse(self.url)
+        server = Server('%s://%s/' % (parsed.scheme, parsed.netloc))
+        server[parsed.path.lstrip("/")]
 
-COMMANDS = {
-    'capabilities': do_capabilities,
-    'connect': do_connect,
-    'list': do_list,
-    'option': do_option,
-}
+        if False:
+            die("Can't connect")
 
-def sanitize(value):
-    """Cleans up the url."""
+        stdout("fallback")
 
-    return value.replace('http+couch', 'http', 1)
+    def do_option(self, line):
+        stdout("unsupported")
 
-def read_one_line():
-    """Reads and processes one command."""
+    COMMANDS = {
+        'capabilities': do_capabilities,
+        'connect': do_connect,
+        'list': do_list,
+        'option': do_option,
+    }
 
-    cmdline = sys.stdin.readline()
+    def sanitize(self, value):
+        """Cleans up the url."""
 
-    if not cmdline:
-        warn("Unexpected EOF")
-        return False
+        return value.replace('http+couch', 'http', 1)
 
-    cmdline = cmdline.strip().split()
-    if not cmdline:
-        # Blank line means we're about to quit
-        return False
+    def read_one_line(self):
+        """Reads and processes one command."""
 
-    cmd = cmdline.pop(0)
-    debug("Got command '%s' with args '%s'", cmd, ' '.join(cmdline))
+        cmdline = sys.stdin.readline()
 
-    if cmd not in COMMANDS:
-        die("Unknown command, %s", cmd)
+        if not cmdline:
+            warn("Unexpected EOF")
+            return False
 
-    func = COMMANDS[cmd]
-    func(cmdline)
-    sys.stdout.flush()
+        cmdline = cmdline.strip().split()
+        if not cmdline:
+            # Blank line means we're about to quit
+            return False
 
-    return True
+        cmd = cmdline.pop(0)
+        debug("Got command '%s' with args '%s'", cmd, ' '.join(cmdline))
+
+        if cmd not in self.COMMANDS:
+            die("Unknown command, %s", cmd)
+
+        func = self.COMMANDS[cmd]
+        func(self, cmdline)
+        sys.stdout.flush()
+
+        return True
+
+    def __init__(self, _, alias, url):
+
+        self.alias = self.sanitize(alias)
+        self.url = self.sanitize(url)
+
+        debug("Got arguments %s", (self.alias, self.url))
+
+        more = True
+
+        while (more):
+            more = self.read_one_line()
 
 def main():
-    args = sys.argv
-
-    if len(args) != 3:
+    if len(sys.argv) != 3:
         die("Expecting exactly three arguments.")
         sys.exit(1)
 
-    alias = sanitize(args[1])
-    url = sanitize(args[2])
-
-    if not alias.isalnum():
-        warn("non-alnum alias '%s'", alias)
-        alias = "tmp"
-
-    args[1] = alias
-    args[2] = url
-
-    debug("Got arguments %s", args[1:])
-
-    more = True
-
-    while (more):
-        more = read_one_line()
-
+    CouchRemote(*sys.argv)

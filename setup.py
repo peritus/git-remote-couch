@@ -27,6 +27,7 @@ setup(
     extras_require = dict(
         test=[
             'zope.testing',
+            'lovely.testlayers==0.1.0a7',
             ]),
     entry_points = {
         'console_scripts' : [
