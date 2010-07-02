@@ -1,0 +1,7 @@
+.installed.cfg
+bin/buildout
+bin/git-remote-http+couch
+bin/test
+develop-eggs/
+parts/
+src/git_remote_couch.egg-info/
