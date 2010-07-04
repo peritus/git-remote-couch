@@ -3,9 +3,22 @@
 import sys
 from couchdb import Server
 from urlparse import urlparse
+from subprocess import Popen, STDOUT, PIPE
+from shlex import split
+from json import loads, dumps
 
 # Whether or not to show debug messages
 DEBUG = True
+
+def system(cmd):
+    process = Popen(split(cmd), stderr=STDOUT, stdout=PIPE)
+    # from http://stackoverflow.com/questions/1388753/how-to-get-output-from-subprocess-popen
+    value = ""
+    while True:
+        read = process.stdout.read(1)
+        value += read
+        if read == '' and process.poll() != None:
+            return value
 
 def notify(msg, *args):
     """Print a message to stderr."""
@@ -53,21 +66,37 @@ class CouchRemote(object):
     def do_list(self, line):
         """Lists all the refs"""
 
-        stdout("7aeaa2fc0abbf439534769e15b3a59a5814cc3d1 refs/heads/master")
-        stdout("@refs/heads/master HEAD")
+        if line != ['for-push']:
+            stdout("7aeaa2fc0abbf439534769e15b3a59a5814cc3d1 refs/heads/master")
+            stdout("@refs/heads/master HEAD")
+
         stdout()
 
     def do_connect(self, line):
         """Connects to the Couch"""
 
         parsed = urlparse(self.url)
-        server = Server('%s://%s/' % (parsed.scheme, parsed.netloc))
-        server[parsed.path.lstrip("/")]
 
-        if False:
+        try:
+            self.server = Server('%s://%s/' % (parsed.scheme, parsed.netloc))
+            self.couch = self.server[parsed.path.lstrip("/")]
+        except:
+            raise
             die("Can't connect")
 
         stdout("fallback")
+
+    def do_push(self, line):
+        src, dst = line[0].split(":")
+        rev_list = system("git rev-list --objects %s" % src)
+        for obj in rev_list.split('\n'):
+            obj = obj.split()
+            if obj:
+                hash = obj[0]
+                content = system("git cat-file -p %s" % hash)
+                self.couch[hash] = {'_id': hash, 'content': content}
+
+        stdout("ok %s" % dst)
 
     def do_option(self, line):
         stdout("unsupported")
@@ -77,6 +106,7 @@ class CouchRemote(object):
         'connect': do_connect,
         'list': do_list,
         'option': do_option,
+        'push': do_push,
     }
 
     def sanitize(self, value):
