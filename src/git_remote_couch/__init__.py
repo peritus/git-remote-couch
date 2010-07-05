@@ -2,6 +2,7 @@
 
 import sys
 from couchdb import Server
+from couchdb.http import ResourceConflict
 from urlparse import urlparse
 from subprocess import Popen, STDOUT, PIPE
 from shlex import split
@@ -94,7 +95,10 @@ class CouchRemote(object):
             if obj:
                 hash = obj[0]
                 content = system("git cat-file -p %s" % hash)
-                self.couch[hash] = {'_id': hash, 'content': content}
+                try:
+                    self.couch[hash] = {'_id': hash, 'content': content}
+                except ResourceConflict, e:
+                    pass # ignore, must be the same then
 
         stdout("ok %s" % dst)
 
