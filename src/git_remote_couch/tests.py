@@ -15,6 +15,7 @@ class CouchDBLayer(ServerLayer):
 [couchdb]
 database_dir = %(store_dir)s
 view_index_dir = %(store_dir)s
+delayed_commits = false
 
 [httpd]
 port = %(port)s
