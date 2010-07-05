@@ -11,7 +11,7 @@ class CouchDBLayer(ServerLayer):
 
     __bases__ = ()
 
-    COMMAND = os.path.join(os.path.dirname(__file__), '../../parts/couchdb/bin/couchdb')
+    COMMAND = 'couchdb -a ./local.ini'
 
     def __init__(self, name, port=5984, connections=10):
         self.port = port
@@ -22,6 +22,8 @@ class CouchDBLayer(ServerLayer):
             start_cmd=start_cmd)
 
 def test_suite():
+    os.environ['PATH'] += ":" + os.path.join(
+        os.path.dirname(__file__), '../../parts/couchdb/bin/')
     return unittest.TestSuite(
         doctest.DocFileSuite('fetch.rst',
             optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
