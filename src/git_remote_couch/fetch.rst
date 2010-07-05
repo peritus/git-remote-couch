@@ -4,12 +4,6 @@ git-remote-couch
 Preparations
 ------------
 
-To fetch, we first need a couch
-
->>> from git_remote_couch.tests import CouchDBLayer
->>> couch = CouchDBLayer('couch')
->>> couch.setUp()
-
 >>> import os
 >>> import sys
 >>> from subprocess import Popen, STDOUT, PIPE
@@ -66,11 +60,5 @@ out: unsupported
 Got command 'push' with args 'refs/heads/master:refs/heads/experimental'
 out: ok refs/heads/experimental
 
-
 >>> os.chdir('..')
 
---------
-
-Turn off the couch then:
-
->>> couch.tearDown()

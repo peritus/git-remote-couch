@@ -46,10 +46,12 @@ level = info
 def test_suite():
     os.environ['PATH'] += ":" + os.path.join(
         os.path.dirname(__file__), '../../parts/couchdb/bin/')
-    return unittest.TestSuite(
+    suite = unittest.TestSuite(
         doctest.DocFileSuite('fetch.rst',
             optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
     )
+    suite.layer = CouchDBLayer('couch')
+    return suite
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
