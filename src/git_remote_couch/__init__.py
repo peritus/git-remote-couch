@@ -2,7 +2,7 @@
 
 import sys
 from couchdb import Server
-from couchdb.http import ResourceConflict
+from couchdb.http import ResourceConflict, ResourceNotFound
 from urlparse import urlparse
 from subprocess import Popen, STDOUT, PIPE
 from shlex import split
@@ -77,12 +77,14 @@ class CouchRemote(object):
         """Connects to the Couch"""
 
         parsed = urlparse(self.url)
+        db_name = parsed.path.lstrip("/")
 
         try:
             self.server = Server('%s://%s/' % (parsed.scheme, parsed.netloc))
-            self.couch = self.server[parsed.path.lstrip("/")]
+            self.couch = self.server[db_name]
+        except ResourceNotFound:
+            self.couch = self.server.create(db_name)
         except:
-            raise
             die("Can't connect")
 
         stdout("fallback")
