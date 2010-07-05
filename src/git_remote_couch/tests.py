@@ -6,7 +6,7 @@ import os
 
 class CouchDBLayer(ServerLayer):
 
-    """A layer that starts and stops memcached, the memcached
+    """A layer that starts and stops CouchDB,
     executable needs to be in the path"""
 
     __bases__ = ()
