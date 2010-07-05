@@ -11,10 +11,31 @@ class CouchDBLayer(ServerLayer):
 
     __bases__ = ()
 
+    LOCAL_INI_TEMPLATE = '''\
+[couchdb]
+database_dir = %(store_dir)s
+view_index_dir = %(store_dir)s
+
+[httpd]
+port = %(port)s
+
+[log]
+level = info
+'''
+
     COMMAND = 'couchdb -a ./local.ini'
 
     def __init__(self, name, port=5984, connections=10):
         self.port = port
+
+        local_ini = open("./local.ini", "w")
+
+        local_ini.write(self.LOCAL_INI_TEMPLATE % {
+            'store_dir': os.path.abspath("."),
+            'port': port,
+            })
+        local_ini.close()
+
         start_cmd = self.COMMAND
 
         super(CouchDBLayer, self).__init__(
