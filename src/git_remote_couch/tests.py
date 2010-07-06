@@ -44,8 +44,11 @@ level = info
             start_cmd=start_cmd)
 
 def test_suite():
-    os.environ['PATH'] += ":" + os.path.join(
-        os.path.dirname(__file__), '../../parts/couchdb/bin/')
+    os.environ['PATH'] = (
+       ":" + os.path.join(os.path.dirname(__file__), '../../parts/couchdb/bin/') +
+       ":" + os.path.join(os.path.dirname(__file__), '../../bin') +
+       ':' + os.environ['PATH']
+    )
     suite = unittest.TestSuite(
         doctest.DocFileSuite('fetch.rst',
             optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),

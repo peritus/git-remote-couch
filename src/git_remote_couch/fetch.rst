@@ -19,8 +19,6 @@ Preparations
 ...             sys.stdout.write(out)
 ...             sys.stdout.flush()
 
->>> os.environ['PATH'] = os.path.join(os.getcwd(), '..', '..', 'bin') + ':' + os.environ['PATH']
-
 --------
 
 So, we create a repo:
