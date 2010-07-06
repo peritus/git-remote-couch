@@ -102,6 +102,8 @@ class CouchRemote(object):
                 except ResourceConflict, e:
                     pass # ignore, must be the same then
 
+        self.couch[dst] = {'content': system("git rev-parse %s" % src)}
+
         stdout("ok %s" % dst)
 
     def do_option(self, line):
