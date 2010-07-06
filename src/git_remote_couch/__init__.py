@@ -67,38 +67,6 @@ class CouchRemote(object):
        }
     }
 
-    def do_capabilities(self, line):
-        stdout("fetch")
-        stdout("list")
-        stdout("option")
-        stdout("push")
-        stdout()
-
-    def do_list(self, line):
-        """Lists all the refs"""
-
-        for row in self.view('refs'):
-            stdout("%s %s" % (row['value'].strip("\n"), row['key']))
-
-        stdout()
-
-    def view(self, name, attempt=0):
-        if attempt > 2:
-            die("Too many attempts to install design document")
-
-        try:
-            result = self.couch.view('git_remote_couch/%s' % name)
-            result._fetch() # force evaluation (to trigger 404)
-            return result
-        except ResourceNotFound:
-            # install / update design document
-            try:
-                self.couch['_design/git_remote_couch'] = self.DESIGN_DOCUMENT
-            except:
-                die("Could not add design document to '_design/git_remote_couch'")
-
-        return self.view(name, attempt+1)
-
     @property
     def server(self):
         if self._server != None:
@@ -129,6 +97,37 @@ class CouchRemote(object):
 
         return self._couch
 
+    def __init__(self, _, alias, url):
+        self._couch = None
+        self._server = None
+
+        sanitize = lambda value: value.replace('http+couch', 'http', 1)
+
+        self.alias = sanitize(alias)
+        self.url = sanitize(url)
+
+        debug("Got arguments %s", (self.alias, self.url))
+
+        more = True
+
+        while (more):
+            more = self.read_one_line()
+
+    def do_capabilities(self, line):
+        stdout("fetch")
+        stdout("list")
+        stdout("option")
+        stdout("push")
+        stdout()
+
+    def do_list(self, line):
+        """Lists all the refs"""
+
+        for row in self.view('refs'):
+            stdout("%s %s" % (row['value'].strip("\n"), row['key']))
+
+        stdout()
+
     def do_push(self, line):
         src, dst = line[0].split(":")
         rev_list = system("git rev-list --objects %s" % src)
@@ -148,6 +147,23 @@ class CouchRemote(object):
 
     def do_option(self, line):
         stdout("unsupported")
+
+    def view(self, name, attempt=0):
+        if attempt > 2:
+            die("Too many attempts to install design document")
+
+        try:
+            result = self.couch.view('git_remote_couch/%s' % name)
+            result._fetch() # force evaluation (to trigger 404)
+            return result
+        except ResourceNotFound:
+            # install / update design document
+            try:
+                self.couch['_design/git_remote_couch'] = self.DESIGN_DOCUMENT
+            except:
+                die("Could not add design document to '_design/git_remote_couch'")
+
+        return self.view(name, attempt+1)
 
     def read_one_line(self):
         """Reads and processes one command."""
@@ -175,22 +191,6 @@ class CouchRemote(object):
         sys.stdout.flush()
 
         return True
-
-    def __init__(self, _, alias, url):
-        self._couch = None
-        self._server = None
-
-        sanitize = lambda value: value.replace('http+couch', 'http', 1)
-
-        self.alias = sanitize(alias)
-        self.url = sanitize(url)
-
-        debug("Got arguments %s", (self.alias, self.url))
-
-        more = True
-
-        while (more):
-            more = self.read_one_line()
 
 def main():
     if len(sys.argv) != 3:
