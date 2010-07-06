@@ -120,7 +120,7 @@ class CouchRemote(object):
                 hash = obj[0]
                 content = system("git cat-file -p %s" % hash)
                 try:
-                    self.couch[hash] = {'_id': hash, 'content': content}
+                    self.couch[hash] = {'content': content}
                 except ResourceConflict, e:
                     pass # ignore, must be the same then
 
