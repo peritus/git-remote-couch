@@ -26,7 +26,7 @@ So, we create a repo:
 >>> system('mkdir testrepo0')
 >>> os.chdir('testrepo0')
 >>> system('git init .')
-Initialized empty Git repository in .../parts/test/testrepo0/.git/
+Initialized empty Git repository in .../testrepo0/.git/
 
 >>> system('touch -t200504072213.12 foo.txt')
 >>> system('git add foo.txt')

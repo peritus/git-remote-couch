@@ -1,6 +1,7 @@
 import unittest
 import doctest
 from lovely.testlayers.server import ServerLayer
+from shutil import rmtree
 
 import os
 
@@ -43,12 +44,19 @@ level = info
             name, servers=['localhost:%s' % port],
             start_cmd=start_cmd)
 
+def setUp(dir):
+    if os.path.isdir(dir):
+        rmtree(dir)
+    os.mkdir(dir)
+    os.chdir(dir)
+
 def test_suite():
     os.environ['PATH'] = (
        ":" + os.path.join(os.path.dirname(__file__), '../../parts/couchdb/bin/') +
        ":" + os.path.join(os.path.dirname(__file__), '../../bin') +
        ':' + os.environ['PATH']
     )
+    setUp('work')
     suite = unittest.TestSuite(
         doctest.DocFileSuite('fetch.rst',
             optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
