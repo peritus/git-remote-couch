@@ -57,6 +57,16 @@ def die (msg, *args):
 
 
 class CouchRemote(object):
+
+    DESIGN_DOCUMENT = {
+       "_id": "_design/git_remote_couch",
+       "views": {
+           "refs": {
+               "map": "function(doc){ if (doc._id.match(/^refs/)){emit(doc._id, doc.content)}}"
+           }
+       }
+    }
+
     def do_capabilities(self, line):
         stdout("connect")
         stdout("fetch")
@@ -86,6 +96,18 @@ class CouchRemote(object):
             self.couch = self.server.create(db_name)
         except:
             die("Can't connect")
+
+        # install / update design document
+        def add_design_document():
+            try:
+                self.couch['_design/git_remote_couch'] = self.DESIGN_DOCUMENT
+            except:
+                die("Can't connect")
+
+        try:
+            got = self.couch['_design/git_remote_couch']
+        except ResourceNotFound:
+            add_design_document()
 
         stdout("fallback")
 
