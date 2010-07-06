@@ -8,8 +8,10 @@ Preparations
 >>> import sys
 >>> from subprocess import Popen, STDOUT, PIPE
 >>> from shlex import split
->>> def system(cmd):
-...     process = Popen(split(cmd), stderr=STDOUT, stdout=PIPE)
+>>> def system(cmd, env=None):
+...     if env != None:
+...         env.update(os.environ)
+...     process = Popen(split(cmd), stderr=STDOUT, stdout=PIPE, env=env)
 ...     # from http://stackoverflow.com/questions/1388753/how-to-get-output-from-subprocess-popen
 ...     while True:
 ...         out = process.stdout.read(1)
@@ -33,8 +35,10 @@ Initialized empty Git repository in .../testrepo0/.git/
 
 >>> system('touch -t200504072213.12 foo.txt')
 >>> system('git add foo.txt')
->>> system("git commit -m 'Initial commit' --date=2005-04-07T22:13:13")
-[master (root-commit) ...] Initial commit
+>>> system("git commit -m 'Initial commit'", env=dict(
+...  GIT_AUTHOR_DATE="2005-04-07T22:13:13",
+...  GIT_COMMITTER_DATE="2005-04-07T22:13:13"))
+[master (root-commit) 36a81d6] Initial commit
  0 files changed, 0 insertions(+), 0 deletions(-)
  create mode 100644 foo.txt
 
@@ -65,9 +69,9 @@ out: option
 out: push
 out: 
 Got command 'list' with args ''
-out: ... refs/heads/experimental
+out: 36a81d66f949805e7526b12419c61a0a4000bd47 refs/heads/experimental
 out: 
-...	refs/heads/experimental
+36a81d66f949805e7526b12419c61a0a4000bd47	refs/heads/experimental
 
 >>> os.chdir('..')
 
