@@ -70,6 +70,7 @@ class CouchRemote(object):
     def do_capabilities(self, line):
         stdout("connect")
         stdout("fetch")
+        stdout("list")
         stdout("option")
         stdout("push")
         stdout()
@@ -77,9 +78,8 @@ class CouchRemote(object):
     def do_list(self, line):
         """Lists all the refs"""
 
-        if line != ['for-push']:
-            stdout("7aeaa2fc0abbf439534769e15b3a59a5814cc3d1 refs/heads/master")
-            stdout("@refs/heads/master HEAD")
+        for row in self.couch.view('git_remote_couch/refs'):
+            stdout("%s %s" % (row['value'].strip("\n"), row['key']))
 
         stdout()
 
