@@ -131,14 +131,6 @@ class CouchRemote(object):
     def do_option(self, line):
         stdout("unsupported")
 
-    COMMANDS = {
-        'capabilities': do_capabilities,
-        'connect': do_connect,
-        'list': do_list,
-        'option': do_option,
-        'push': do_push,
-    }
-
     def sanitize(self, value):
         """Cleans up the url."""
 
@@ -161,11 +153,12 @@ class CouchRemote(object):
         cmd = cmdline.pop(0)
         debug("Got command '%s' with args '%s'", cmd, ' '.join(cmdline))
 
-        if cmd not in self.COMMANDS:
+        func = getattr(self, "do_%s" % cmd)
+
+        if func == None:
             die("Unknown command, %s", cmd)
 
-        func = self.COMMANDS[cmd]
-        func(self, cmdline)
+        func(cmdline)
         sys.stdout.flush()
 
         return True
