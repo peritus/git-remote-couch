@@ -28,6 +28,7 @@ setup(
         test=[
             'zope.testing',
             'lovely.testlayers==0.1.0a7',
+            'livetest==0.3dev',
             ]),
     entry_points = {
         'console_scripts' : [

@@ -60,6 +60,27 @@ out: unsupported
 Got command 'push' with args 'refs/heads/master:refs/heads/experimental'
 out: ok refs/heads/experimental
 
+>>> import livetest, json, pprint
+>>> couch = livetest.TestApp('localhost:5984')
+>>> pprint.pprint(json.loads(couch.get("/testrepo0/_all_docs").unicode_body))
+{u'offset': 0,
+ u'rows': [{u'id': u'09a13b897d3d0f528d487c704da540cb952d7606',
+            u'key': u'09a13b897d3d0f528d487c704da540cb952d7606',
+            u'value': {u'rev': u'1-...'}},
+           {u'id': u'36a81d66f949805e7526b12419c61a0a4000bd47',
+            u'key': u'36a81d66f949805e7526b12419c61a0a4000bd47',
+            u'value': {u'rev': u'1-...'}},
+           {u'id': u'_design/git_remote_couch',
+            u'key': u'_design/git_remote_couch',
+            u'value': {u'rev': u'1-...'}},
+           {u'id': u'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
+            u'key': u'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
+            u'value': {u'rev': u'1-...'}},
+           {u'id': u'refs/heads/experimental',
+            u'key': u'refs/heads/experimental',
+            u'value': {u'rev': u'1-...'}}],
+ u'total_rows': 5}
+
 >>> system("git ls-remote origin")
 Got arguments ('origin', 'http://localhost:5984/testrepo0')
 Got command 'capabilities' with args ''
