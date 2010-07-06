@@ -42,18 +42,13 @@ Initialized empty Git repository in .../testrepo0/.git/
 >>> system("git push origin master:refs/heads/experimental")
 Got arguments ('origin', 'http://localhost:5984/testrepo0')
 Got command 'capabilities' with args ''
-out: connect
 out: fetch
 out: list
 out: option
 out: push
 out: 
-Got command 'connect' with args 'git-receive-pack'
-out: fallback
 Got command 'list' with args 'for-push'
 out: 
-Got command 'connect' with args 'git-receive-pack'
-out: fallback
 Got command 'option' with args 'progress false'
 out: unsupported
 Got command 'option' with args 'verbosity 1'
@@ -64,14 +59,11 @@ out: ok refs/heads/experimental
 >>> system("git ls-remote origin")
 Got arguments ('origin', 'http://localhost:5984/testrepo0')
 Got command 'capabilities' with args ''
-out: connect
 out: fetch
 out: list
 out: option
 out: push
 out: 
-Got command 'connect' with args 'git-upload-pack'
-out: fallback
 Got command 'list' with args ''
 out: ... refs/heads/experimental
 out: 

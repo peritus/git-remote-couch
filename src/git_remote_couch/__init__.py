@@ -68,7 +68,6 @@ class CouchRemote(object):
     }
 
     def do_capabilities(self, line):
-        stdout("connect")
         stdout("fetch")
         stdout("list")
         stdout("option")
@@ -78,38 +77,57 @@ class CouchRemote(object):
     def do_list(self, line):
         """Lists all the refs"""
 
-        for row in self.couch.view('git_remote_couch/refs'):
+        for row in self.view('refs'):
             stdout("%s %s" % (row['value'].strip("\n"), row['key']))
 
         stdout()
 
-    def do_connect(self, line):
-        """Connects to the Couch"""
+    def view(self, name, attempt=0):
+        if attempt > 2:
+            die("Too many attempts to install design document")
+
+        try:
+            result = self.couch.view('git_remote_couch/%s' % name)
+            result._fetch() # force evaluation (to trigger 404)
+            return result
+        except ResourceNotFound:
+            # install / update design document
+            try:
+                self.couch['_design/git_remote_couch'] = self.DESIGN_DOCUMENT
+            except:
+                die("Could not add design document to '_design/git_remote_couch'")
+
+        return self.view(name, attempt+1)
+
+    @property
+    def server(self):
+        if self._server != None:
+            return self._server
+
+        parsed = urlparse(self.url)
+
+        try:
+            self._server = Server('%s://%s/' % (parsed.scheme, parsed.netloc))
+            return self._server
+        except Exception, e:
+            debug(repr(e))
+            die("Can't connect")
+
+    @property
+    def couch(self):
+        """Creates the remote couch"""
+        if self._couch != None:
+            return self._couch
 
         parsed = urlparse(self.url)
         db_name = parsed.path.lstrip("/")
 
         try:
-            self.server = Server('%s://%s/' % (parsed.scheme, parsed.netloc))
-            self.couch = self.server[db_name]
+            self._couch = self.server[db_name]
         except ResourceNotFound:
-            self.couch = self.server.create(db_name)
-        except:
-            die("Can't connect")
+            self._couch = self.server.create(db_name)
 
-        # install / update design document
-        def add_design_document():
-            try:
-                self.couch['_design/git_remote_couch'] = self.DESIGN_DOCUMENT
-            except:
-                die("Can't connect")
-
-        try:
-            got = self.couch['_design/git_remote_couch']
-        except ResourceNotFound:
-            add_design_document()
-
-        stdout("fallback")
+        return self._couch
 
     def do_push(self, line):
         src, dst = line[0].split(":")
@@ -164,6 +182,8 @@ class CouchRemote(object):
         return True
 
     def __init__(self, _, alias, url):
+        self._couch = None
+        self._server = None
 
         self.alias = self.sanitize(alias)
         self.url = self.sanitize(url)
