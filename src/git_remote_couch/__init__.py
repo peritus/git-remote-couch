@@ -149,11 +149,6 @@ class CouchRemote(object):
     def do_option(self, line):
         stdout("unsupported")
 
-    def sanitize(self, value):
-        """Cleans up the url."""
-
-        return value.replace('http+couch', 'http', 1)
-
     def read_one_line(self):
         """Reads and processes one command."""
 
@@ -185,8 +180,10 @@ class CouchRemote(object):
         self._couch = None
         self._server = None
 
-        self.alias = self.sanitize(alias)
-        self.url = self.sanitize(url)
+        sanitize = lambda value: value.replace('http+couch', 'http', 1)
+
+        self.alias = sanitize(alias)
+        self.url = sanitize(url)
 
         debug("Got arguments %s", (self.alias, self.url))
 
