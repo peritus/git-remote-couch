@@ -1,5 +1,6 @@
 .installed.cfg
 bin/buildout
+bin/couchdb
 bin/git-remote-http+couch
 bin/test
 develop-eggs/
