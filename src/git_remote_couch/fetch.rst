@@ -28,11 +28,13 @@ So, we create a repo:
 >>> system('git init .')
 Initialized empty Git repository in .../testrepo0/.git/
 
+>>> system('git config user.name "Test User"')
+>>> system('git config user.email "test@example.com"')
+
 >>> system('touch -t200504072213.12 foo.txt')
 >>> system('git add foo.txt')
->>> system("git commit -m 'Initial commit' --date=2005-04-07T22:13:13 --author='Test User <testuser@example.com>'")
+>>> system("git commit -m 'Initial commit' --date=2005-04-07T22:13:13")
 [master (root-commit) ...] Initial commit
- Author: Test User <testuser@example.com>
  0 files changed, 0 insertions(+), 0 deletions(-)
  create mode 100644 foo.txt
 
