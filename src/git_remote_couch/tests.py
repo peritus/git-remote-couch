@@ -51,11 +51,6 @@ def setUp(dir):
     os.chdir(dir)
 
 def test_suite():
-    os.environ['PATH'] = (
-       ":" + os.path.join(os.path.dirname(__file__), '../../parts/couchdb/bin/') +
-       ":" + os.path.join(os.path.dirname(__file__), '../../bin') +
-       ':' + os.environ['PATH']
-    )
     setUp('work')
     suite = unittest.TestSuite(
         doctest.DocFileSuite('fetch.rst',
