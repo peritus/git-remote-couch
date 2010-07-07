@@ -64,6 +64,22 @@ out: unsupported
 Got command 'push' with args 'refs/heads/master:refs/heads/experimental'
 out: ok refs/heads/experimental
 
+Then we push again (we don't need to upgrade the ref then)
+
+>>> system("git push origin master:refs/heads/experimental")
+Got arguments ('origin', 'http://localhost:.../testrepo0')
+Got command 'capabilities' with args ''
+out: fetch
+out: list
+out: option
+out: push
+out: 
+Got command 'list' with args 'for-push'
+out: 36a81d66f949805e7526b12419c61a0a4000bd47 refs/heads/experimental
+out: 
+Everything up-to-date
+
+
 >>> import livetest, json, pprint
 >>> couch = livetest.TestApp('localhost:%d' % COUCHDB_PORT)
 >>> pprint.pprint(json.loads(couch.get("/testrepo0/_all_docs").unicode_body))
