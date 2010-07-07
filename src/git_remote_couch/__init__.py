@@ -7,6 +7,7 @@ from urlparse import urlparse
 from subprocess import Popen, STDOUT, PIPE
 from shlex import split
 from json import loads, dumps
+from binascii import b2a_hex
 
 # Whether or not to show debug messages
 DEBUG = True
@@ -131,13 +132,33 @@ class CouchRemote(object):
     def do_push(self, line):
         src, dst = line[0].split(":")
         rev_list = system("git rev-list --objects %s" % src)
+
         for obj in rev_list.split('\n'):
             obj = obj.split()
             if obj:
+                doc = {}
                 hash = obj[0]
-                content = system("git cat-file -p %s" % hash)
+
+                doc['type'] = system("git cat-file -t %s" % hash).strip("\n")
+                doc['content'] = system("git cat-file %s %s" % (doc['type'], hash))
+
+                if doc['type'] == 'tree':
+                    tree_list = doc['content'].split("\n")
+                    doc['content'] = []
+                    for line in tree_list:
+                        mode, filename = line[:-21].split()
+                        sha = b2a_hex(line[-21:])
+                        doc['content'].append([mode, filename, sha])
+
+                elif doc['type'] == 'commit':
+                    header, message = doc['content'].split("\n\n", 1)
+                    for line in header.split("\n"):
+                        name, value = line.split(" ", 1)
+                        doc[name] = value
+                    doc['content'] = message
+
                 try:
-                    self.couch[hash] = {'content': content}
+                    self.couch[hash] = doc
                 except ResourceConflict, e:
                     pass # ignore, must be the same then
 
