@@ -8,6 +8,7 @@ from subprocess import Popen, STDOUT, PIPE
 from shlex import split
 from json import loads, dumps
 from binascii import b2a_hex
+from StringIO import StringIO
 
 # Whether or not to show debug messages
 DEBUG = True
@@ -143,12 +144,21 @@ class CouchRemote(object):
                 doc['content'] = system("git cat-file %s %s" % (doc['type'], hash))
 
                 if doc['type'] == 'tree':
-                    tree_list = doc['content'].split("\n")
+                    tree_list = StringIO(doc['content'])
                     doc['content'] = []
-                    for line in tree_list:
-                        mode, filename = line[:-21].split()
-                        sha = b2a_hex(line[-21:])
-                        doc['content'].append([mode, filename, sha])
+                    ascii = ''
+
+                    while True:
+                        c = tree_list.read(1)
+                        if c == '\x00':
+                            sha = b2a_hex(tree_list.read(20))
+                            mode, filename = ascii.split(" ")
+                            ascii = ''
+                            doc['content'].append([mode, filename, sha])
+                        elif c == '':
+                            break
+                        else:
+                            ascii += c
 
                 elif doc['type'] == 'commit':
                     header, message = doc['content'].split("\n\n", 1)
