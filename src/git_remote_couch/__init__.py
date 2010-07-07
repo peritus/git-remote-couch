@@ -203,10 +203,10 @@ class CouchRemote(object):
         cmd = cmdline.pop(0)
         debug("Got command '%s' with args '%s'", cmd, ' '.join(cmdline))
 
-        func = getattr(self, "do_%s" % cmd)
-
-        if func == None:
-            die("Unknown command, %s", cmd)
+        try:
+            func = getattr(self, "do_%s" % cmd)
+        except AttributeError, e:
+            die("Unknown command: '%s'", cmd)
 
         func(cmdline)
         sys.stdout.flush()
