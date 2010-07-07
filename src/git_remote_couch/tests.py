@@ -56,7 +56,10 @@ def test_suite():
         doctest.DocFileSuite('fetch.rst',
             optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
     )
-    suite.layer = CouchDBLayer('couch')
+    COUCHDB_PORT = 5984
+    if 'COUCHDB_PORT' in os.environ: COUCHDB_PORT = int(os.environ['COUCHDB_PORT'])
+
+    suite.layer = CouchDBLayer('couch', port=COUCHDB_PORT)
     return suite
 
 if __name__ == '__main__':

@@ -8,6 +8,10 @@ Preparations
 >>> import sys
 >>> from subprocess import Popen, STDOUT, PIPE
 >>> from shlex import split
+
+>>> COUCHDB_PORT = 5984
+>>> if 'COUCHDB_PORT' in os.environ: COUCHDB_PORT = int(os.environ['COUCHDB_PORT'])
+
 >>> def system(cmd, env=None):
 ...     if env != None:
 ...         env.update(os.environ)
@@ -42,9 +46,9 @@ Initialized empty Git repository in .../testrepo0/.git/
  0 files changed, 0 insertions(+), 0 deletions(-)
  create mode 100644 foo.txt
 
->>> system("git remote add origin http+couch://localhost:5984/testrepo0")
+>>> system("git remote add origin http+couch://localhost:%d/testrepo0" % COUCHDB_PORT)
 >>> system("git push origin master:refs/heads/experimental")
-Got arguments ('origin', 'http://localhost:5984/testrepo0')
+Got arguments ('origin', 'http://localhost:.../testrepo0')
 Got command 'capabilities' with args ''
 out: fetch
 out: list
@@ -61,7 +65,7 @@ Got command 'push' with args 'refs/heads/master:refs/heads/experimental'
 out: ok refs/heads/experimental
 
 >>> import livetest, json, pprint
->>> couch = livetest.TestApp('localhost:5984')
+>>> couch = livetest.TestApp('localhost:%d' % COUCHDB_PORT)
 >>> pprint.pprint(json.loads(couch.get("/testrepo0/_all_docs").unicode_body))
 {u'offset': 0,
  u'rows': [{u'id': u'09a13b897d3d0f528d487c704da540cb952d7606',
@@ -82,7 +86,7 @@ out: ok refs/heads/experimental
  u'total_rows': 5}
 
 >>> system("git ls-remote origin")
-Got arguments ('origin', 'http://localhost:5984/testrepo0')
+Got arguments ('origin', 'http://localhost:.../testrepo0')
 Got command 'capabilities' with args ''
 out: fetch
 out: list
