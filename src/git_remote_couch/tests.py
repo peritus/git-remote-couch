@@ -54,7 +54,7 @@ def test_suite():
     setUp('work')
     suite = unittest.TestSuite(
         doctest.DocFileSuite('fetch.rst',
-            optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+            optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS|doctest.REPORT_UDIFF),
     )
     COUCHDB_PORT = 5984
     if 'COUCHDB_PORT' in os.environ: COUCHDB_PORT = int(os.environ['COUCHDB_PORT'])
