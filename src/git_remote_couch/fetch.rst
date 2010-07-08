@@ -119,3 +119,36 @@ out:
 
 >>> os.chdir('..')
 
+>>> system("git clone http+couch://localhost:%d/testrepo0 testrepo0_clone" % COUCHDB_PORT)
+Initialized empty Git repository in .../testrepo0_clone/.git/
+Got arguments ('http://localhost:.../testrepo0', 'http://localhost:.../testrepo0')
+Got command 'capabilities' with args ''
+out: fetch
+out: list
+out: option
+out: push
+out: 
+Got command 'list' with args ''
+out: 36a81d66f949805e7526b12419c61a0a4000bd47 refs/heads/experimental
+out: @refs/heads/experimental HEAD
+out: 
+Got command 'option' with args 'progress false'
+out: unsupported
+Got command 'option' with args 'verbosity 1'
+out: unsupported
+Got command 'fetch' with args '36a81d66f949805e7526b12419c61a0a4000bd47 refs/heads/experimental'
+out: 
+
+Now the two directories should be exact copies of the repository.
+
+>>> os.chdir("testrepo0_clone")
+>>> system("ls")
+foo.txt
+>>> system("git rev-list --objects --all")
+36a81d66f949805e7526b12419c61a0a4000bd47
+09a13b897d3d0f528d487c704da540cb952d7606 
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 foo.txt
+>>> system("git fsck --full")
+
+
+

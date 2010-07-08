@@ -7,7 +7,7 @@ from urlparse import urlparse
 from subprocess import Popen, STDOUT, PIPE
 from shlex import split
 from json import loads, dumps
-from binascii import b2a_hex
+from binascii import b2a_hex, a2b_hex
 from StringIO import StringIO
 
 # Whether or not to show debug messages
@@ -180,6 +180,47 @@ class CouchRemote(object):
         self.couch[dst] = {'content': system("git rev-parse %s" % src)}
 
         stdout("ok %s" % dst)
+
+    def do_fetch(self, line):
+        initial, ref = line
+
+        fetch = [initial]
+
+        while fetch:
+            hash = fetch.pop()
+
+            doc = self.couch[hash]
+
+            content = []
+
+            if doc['type'] == 'commit':
+                for key in ('tree', 'parent', 'author', 'committer'):
+                    if key in doc:
+                        if key in ('tree', 'parent'):
+                            fetch.append(doc[key])
+                        content.append('%s %s\n' % (key, doc[key]))
+                content.append("\n%s" % doc['content'])
+            elif doc['type'] == 'tree':
+                for mode, filename, sha in doc['content']:
+                    fetch.append(sha)
+                    content.append("%s %s\x00" % (mode, filename))
+                    content.append(a2b_hex(sha))
+            else:
+                content.append(doc['content'])
+
+            cmd = str("git hash-object -t %s -w --stdin" % doc['type'])
+
+            process = Popen(split(cmd),
+                    stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+
+            for chunk in content:
+                process.stdin.write(chunk)
+            process.stdin.close()
+            process.wait()
+
+        system("git update-ref %s %s" % (ref, initial))
+
+        stdout()
 
     def do_option(self, line):
         stdout("unsupported")
