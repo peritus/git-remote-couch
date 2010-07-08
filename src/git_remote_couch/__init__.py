@@ -125,8 +125,13 @@ class CouchRemote(object):
     def do_list(self, line):
         """Lists all the refs"""
 
+        head = None
         for row in self.view('refs'):
+            head = row['key']
             stdout("%s %s" % (row['value'].strip("\n"), row['key']))
+
+        if head:
+            stdout("@%s HEAD" % row['key'])
 
         stdout()
 

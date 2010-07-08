@@ -76,6 +76,7 @@ out: push
 out: 
 Got command 'list' with args 'for-push'
 out: 36a81d66f949805e7526b12419c61a0a4000bd47 refs/heads/experimental
+out: @refs/heads/experimental HEAD
 out: 
 Everything up-to-date
 
@@ -111,8 +112,10 @@ out: push
 out: 
 Got command 'list' with args ''
 out: 36a81d66f949805e7526b12419c61a0a4000bd47 refs/heads/experimental
+out: @refs/heads/experimental HEAD
 out: 
 36a81d66f949805e7526b12419c61a0a4000bd47	refs/heads/experimental
+36a81d66f949805e7526b12419c61a0a4000bd47	HEAD
 
 >>> os.chdir('..')
 
