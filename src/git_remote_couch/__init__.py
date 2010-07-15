@@ -184,6 +184,9 @@ class CouchRemote(object):
     def do_fetch(self, line):
         initial, ref = line
 
+        # read the terminating blank line
+        assert not self._read_one_line()
+
         fetch = [initial]
 
         while fetch:
@@ -242,16 +245,21 @@ class CouchRemote(object):
 
         return self.view(name, attempt+1)
 
-    def read_one_line(self):
-        """Reads and processes one command."""
-
+    def _read_one_line(self):
+        """Reads one command."""
         cmdline = sys.stdin.readline()
 
         if not cmdline:
             warn("Unexpected EOF")
             return False
 
-        cmdline = cmdline.strip().split()
+        return cmdline.strip().split()
+
+    def read_one_line(self):
+        """Processes one command."""
+
+        cmdline = self._read_one_line()
+
         if not cmdline:
             # Blank line means we're about to quit
             return False
