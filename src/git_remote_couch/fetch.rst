@@ -141,6 +141,9 @@ out:
 
 Now the two directories should be exact copies of the repository.
 
+>>> os.path.exists("testrepo0_clone")
+True
+
 >>> os.chdir("testrepo0_clone")
 >>> system("ls")
 foo.txt
