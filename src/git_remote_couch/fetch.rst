@@ -95,11 +95,12 @@ Everything up-to-date
             u'value': {u'rev': u'1-...'}},
            {u'id': u'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
             u'key': u'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
-            u'value': {u'rev': u'1-...'}},
+            u'value': {u'rev': u'2-...'}},
            {u'id': u'refs/heads/experimental',
             u'key': u'refs/heads/experimental',
             u'value': {u'rev': u'1-...'}}],
  u'total_rows': 5}
+
 
 >>> system("git ls-remote origin")
 Got arguments ('origin', 'http://localhost:.../testrepo0')
@@ -118,15 +119,24 @@ out:
 
 Now we create a second commit
 
->>> system('touch -t200504072213.12 bar.txt')
->>> system('git add bar.txt')
+>>> from base64 import b64decode
+>>> BINARY_DATA = """\
+... iVBORw0KGgoAAAANSUhEUgAAAEgAAAAbBAMAAAAt2dQtAAAAG1BMVEUgAABgYF2wr6oAgADOzcfA
+... AADo6Ob39/b///8ye3xiAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsT
+... AQCanBgAAAAHdElNRQfWBQMVMTQv4ueQAAAAcUlEQVQoz2NI7yAEShgYKggqalNg6CAMBIa0otbQ
+... 0AgYhkk0GxOpyNiCCOvwKjI2Nm42NgZRFjgVNQOVYLGu2QKBKVIEdIAFDBOrCOpwkMstcFqHGpK4
+... FMFMGNxJhYjcIsDgRlBRogADkyBBoMBADAAA0nS2diMFTsIAAAAASUVORK5CYII="""
 
+>>> with open("logo.png", "w") as file:
+...     file.write(b64decode(BINARY_DATA))
+
+>>> system('git add logo.png')
 >>> system("git commit -m 'Second commit'", env=dict(
 ...  GIT_AUTHOR_DATE="2005-04-07T23:13:13",
 ...  GIT_COMMITTER_DATE="2005-04-07T23:13:13"))
-[master c0993a2] Second commit
- 0 files changed, 0 insertions(+), 0 deletions(-)
- create mode 100644 bar.txt
+[master f6b737e] Second commit
+ 1 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 logo.png
 
 And then push again
 
@@ -161,14 +171,14 @@ out: option
 out: push
 out: 
 Got command 'list' with args ''
-out: c0993a27450a2f77e9089f19ceeb62e5e2225fd9 refs/heads/experimental
+out: f6b737ee4e05680358b9f7606f905e06542a7058 refs/heads/experimental
 out: @refs/heads/experimental HEAD
 out: 
 Got command 'option' with args 'progress false'
 out: unsupported
 Got command 'option' with args 'verbosity 1'
 out: unsupported
-Got command 'fetch' with args 'c0993a27450a2f77e9089f19ceeb62e5e2225fd9 refs/heads/experimental'
+Got command 'fetch' with args 'f6b737ee4e05680358b9f7606f905e06542a7058 refs/heads/experimental'
 out: 
 
 Now the two directories should be exact copies of the repository.
@@ -178,14 +188,16 @@ True
 
 >>> os.chdir("testrepo0_clone")
 >>> system("ls")
-bar.txt
 foo.txt
+logo.png
 >>> system("git rev-list --objects --all")
-c0993a27450a2f77e9089f19ceeb62e5e2225fd9
+f6b737ee4e05680358b9f7606f905e06542a7058
 36a81d66f949805e7526b12419c61a0a4000bd47
-00906ce530257852785a7149b8df0c6a75a48ad2
-e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 bar.txt
-09a13b897d3d0f528d487c704da540cb952d7606
+ae52ce10fbd79cd906b393890a9e36860e4e9de0 
+e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 foo.txt
+ac22ccbd3ee9f03a3b38249ac8efdbe96b5da2cd logo.png
+09a13b897d3d0f528d487c704da540cb952d7606 
+
 >>> system("git fsck --full")
 
 

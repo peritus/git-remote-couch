@@ -152,6 +152,7 @@ class CouchRemote(object):
                 doc['type'] = system("git cat-file -t %s" % hash).strip("\n")
                 doc['content'] = system("git cat-file %s %s" % (doc['type'], hash))
 
+                # prepare doc
                 if doc['type'] == 'tree':
                     tree_list = StringIO(doc['content'])
                     doc['content'] = []
@@ -176,8 +177,18 @@ class CouchRemote(object):
                         doc[name] = value
                     doc['content'] = message
 
+                # upload doc
                 try:
-                    self.couch[hash] = doc
+                    if doc['type'] in ('tree', 'commit',):
+                        self.couch[hash] = doc
+                    elif doc['type'] in ('blob',):
+                        self.couch[hash] = {'type': doc['type']}
+                        blobdoc = self.couch[hash]
+                        self.couch.put_attachment(
+                                doc = blobdoc,
+                                content = doc['content'],
+                                filename = 'blob',
+                                content_type = 'application/octet-stream')
                 except ResourceConflict, e:
                     pass # ignore, must be the same then
 
@@ -223,6 +234,12 @@ class CouchRemote(object):
                     fetch.append(sha)
                     content.append("%s %s\x00" % (mode, filename))
                     content.append(a2b_hex(sha))
+            elif doc['type'] == 'blob':
+                blob = self.couch.get_attachment(doc, 'blob', None)
+                if blob == None: # perhaps a bug in CouchDB-python ?
+                    blob = ''
+                for c in blob:
+                    content.append(c)
             else:
                 content.append(doc['content'])
 
