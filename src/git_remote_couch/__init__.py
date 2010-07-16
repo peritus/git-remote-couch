@@ -107,6 +107,7 @@ class CouchRemote(object):
 
         self.alias = sanitize(alias)
         self.url = sanitize(url)
+        self.ls_remote = {}
 
         debug("Got arguments %s", (self.alias, self.url))
 
@@ -127,8 +128,11 @@ class CouchRemote(object):
 
         head = None
         for row in self.view('refs'):
-            head = row['key']
-            stdout("%s %s" % (row['value'].strip("\n"), row['key']))
+            key = row['key']
+            value = row['value'].strip("\n")
+            self.ls_remote[key] = value
+            stdout("%s %s" % (value, key))
+            head = key # update, last one is just the HEAD
 
         if head:
             stdout("@%s HEAD" % row['key'])
@@ -177,7 +181,18 @@ class CouchRemote(object):
                 except ResourceConflict, e:
                     pass # ignore, must be the same then
 
-        self.couch[dst] = {'content': system("git rev-parse %s" % src)}
+        try:
+            dstref = self.couch[dst]
+        except ResourceNotFound:
+            dstref = {'content': None}
+
+        localref = system("git rev-parse %s" % src)
+
+        if dstref['content'] != localref:
+            dstref['content'] = localref
+            self.couch[dst] = dstref
+        else:
+            assert False, "this should not happen"
 
         stdout("ok %s" % dst)
 
