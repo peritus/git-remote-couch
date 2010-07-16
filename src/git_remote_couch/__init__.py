@@ -236,10 +236,10 @@ class CouchRemote(object):
                     content.append(a2b_hex(sha))
             elif doc['type'] == 'blob':
                 blob = self.couch.get_attachment(doc, 'blob', None)
-                if blob == None: # perhaps a bug in CouchDB-python ?
-                    blob = ''
-                for c in blob:
-                    content.append(c)
+                if blob == None:
+                    content.append('') # necessary ?
+                else:
+                    content.append(blob.read())
             else:
                 content.append(doc['content'])
 

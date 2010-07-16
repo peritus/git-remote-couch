@@ -130,12 +130,17 @@ Now we create a second commit
 >>> with open("logo.png", "w") as file:
 ...     file.write(b64decode(BINARY_DATA))
 
->>> system('git add logo.png')
+>>> with open("large.file", "w") as file:
+...     for i in range(1024):
+...         file.write('x' * 1024)
+
+>>> system('git add logo.png large.file')
 >>> system("git commit -m 'Second commit'", env=dict(
 ...  GIT_AUTHOR_DATE="2005-04-07T23:13:13",
 ...  GIT_COMMITTER_DATE="2005-04-07T23:13:13"))
-[master f6b737e] Second commit
- 1 files changed, 0 insertions(+), 0 deletions(-)
+[master dc04964] Second commit
+ 2 files changed, 1 insertions(+), 0 deletions(-)
+ create mode 100644 large.file
  create mode 100644 logo.png
 
 And then push again
@@ -171,14 +176,14 @@ out: option
 out: push
 out: 
 Got command 'list' with args ''
-out: f6b737ee4e05680358b9f7606f905e06542a7058 refs/heads/experimental
+out: dc0496487173fea4ddc00cb0fd77bf34ac867ef2 refs/heads/experimental
 out: @refs/heads/experimental HEAD
 out: 
 Got command 'option' with args 'progress false'
 out: unsupported
 Got command 'option' with args 'verbosity 1'
 out: unsupported
-Got command 'fetch' with args 'f6b737ee4e05680358b9f7606f905e06542a7058 refs/heads/experimental'
+Got command 'fetch' with args 'dc0496487173fea4ddc00cb0fd77bf34ac867ef2 refs/heads/experimental'
 out: 
 
 Now the two directories should be exact copies of the repository.
@@ -189,12 +194,14 @@ True
 >>> os.chdir("testrepo0_clone")
 >>> system("ls")
 foo.txt
+large.file
 logo.png
 >>> system("git rev-list --objects --all")
-f6b737ee4e05680358b9f7606f905e06542a7058
+dc0496487173fea4ddc00cb0fd77bf34ac867ef2
 36a81d66f949805e7526b12419c61a0a4000bd47
-ae52ce10fbd79cd906b393890a9e36860e4e9de0 
+83f1413dc575d1a60138f099b7ebc3119abd076a 
 e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 foo.txt
+fc26db1cf2fd25ac90dbf93eef0ebb92b51e8850 large.file
 ac22ccbd3ee9f03a3b38249ac8efdbe96b5da2cd logo.png
 09a13b897d3d0f528d487c704da540cb952d7606 
 
