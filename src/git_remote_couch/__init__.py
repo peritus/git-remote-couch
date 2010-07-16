@@ -8,7 +8,7 @@ from subprocess import Popen, STDOUT, PIPE
 from shlex import split
 from json import loads, dumps
 from binascii import b2a_hex, a2b_hex
-from StringIO import StringIO
+from cStringIO import StringIO
 
 # Whether or not to show debug messages
 DEBUG = True
