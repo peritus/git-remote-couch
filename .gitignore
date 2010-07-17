@@ -3,6 +3,8 @@ bin/buildout
 bin/couchdb
 bin/git-remote-http+couch
 bin/test
+build/
 develop-eggs/
+dist/
 parts/
 src/git_remote_couch.egg-info/

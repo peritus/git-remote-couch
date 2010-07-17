@@ -6,7 +6,7 @@ Relax your source code
 ----------------------
 
 :Author: `Filip Noetzel <http://filip.noetzel.co.uk/>`_
-:Version: v0.1
+:Version: v0.1a
 :Web: http://github.com/peritus/git-remote-couch/
 :Git: ``git clone git://github.com/peritus/git-remote-couch.git``
   (`browse source <http://github.com/peritus/git-remote-couch/>`_)
@@ -34,7 +34,7 @@ Installation and Usage
 
 First, install `git-remote-couch` via your favorite Python package installing mechanism, like so::
 
-  easy_install -U git-remote-helper
+  easy_install -U git-remote-couch
 
 Then, you can start cloning a repository::
 

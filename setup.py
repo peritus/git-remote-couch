@@ -2,17 +2,21 @@
 from setuptools import setup, find_packages
 import platform
 
-long_description = \
-  'A git-remote helper that allows you to use a CouchDB as a remote'
+from os.path import join, dirname
+import os
 
-name='git_remote_couch'
+long_description = open(join(dirname(__file__), "README.rst")).read()
+
+name='git-remote-couch'
+
+version='0.1a1'
 
 setup(
     name=name,
-    version='0.1',
-    url='http://www.python.org/pypi/'+name,
+    url='http://github.com/peritus/'+name,
+    version=version,
     license='Beerware',
-    description='THE BEER-WARE LICENSE',
+    description='a git-remote-helper that allows you to push source code into a CouchDB',
     author='Filip Noetzel',
     author_email='filip+pypi@j03.de',
     long_description=long_description,
@@ -35,4 +39,15 @@ setup(
             'git-remote-http+couch = git_remote_couch:main',
             ]
         },
+    classifiers = [
+        'Development Status :: 2 - Pre-Alpha',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: POSIX',
+        'Operating System :: POSIX :: BSD',
+        'Operating System :: POSIX :: Linux',
+        'Topic :: Software Development :: Version Control',
+        ]
     )
