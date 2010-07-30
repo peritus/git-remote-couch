@@ -30,9 +30,11 @@ setup(
     zip_safe = False,
     extras_require = dict(
         test=[
-            'zope.testing',
-            'lovely.testlayers==0.1.0a7',
+            'junitxml==0.5',
             'livetest==0.3dev',
+            'lovely.testlayers==0.1.0a7',
+            'python-subunit==0.0.6',
+            'zope.testing',
             ]),
     entry_points = {
         'console_scripts' : [
