@@ -18,4 +18,6 @@ function generate_list() {
 #couch 0.10.2 d24aad80bea950ec6795f8a0cd378f3c
 #couch 0.11.0 c1784e3850da01dc37dad20c5b1a85f8
 #couch 0.11.1 5100ef96f332ab4449ba891a98abde87
+#couch 0.11.2 076b2637dda91cb81fb9bd922ac2f112
 #couch 1.0.0 71e89c4b21c62417f2f413d74a38f079
+#couch 1.0.1 001cf286b72492617e9ffba271702a00
