@@ -167,8 +167,8 @@ out: ok refs/heads/experimental
 >>> os.chdir('..')
 
 >>> system("git clone http+couch://localhost:%d/testrepo0 testrepo0_clone" % COUCHDB_PORT)
-Initialized empty Git repository in .../testrepo0_clone/.git/
-Got arguments ('http://localhost:.../testrepo0', 'http://localhost:.../testrepo0')
+Cloning into testrepo0_clone...
+Got arguments ('origin', 'http://localhost:.../testrepo0')
 Got command 'capabilities' with args ''
 out: fetch
 out: list
